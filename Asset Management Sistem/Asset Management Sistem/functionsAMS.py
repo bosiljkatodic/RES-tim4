@@ -8,7 +8,6 @@ CHOOSE OPTION:
 2) SEE ALL
 3) EXIT
 4) GET CHANGES 
-
 Your selection: 
 """
 
@@ -20,12 +19,15 @@ def menu():
     while(user_input := input(MENU_PROMPT)) != "3":
         if user_input == "1":
             localDeviceCode = input("Enter local Device Code: ")
-            timestamp = input("Enter date, example 2022-05-22 09:26:03:: ")
+            timestamp = input("Enter date, example 2022-05-22 09:26:03: ")
             actualValue = input("Enter actual value(ON, OFF, OPEN or CLOSE): ")
             state = input("Enter state(DIGITAL or ANALOG): ")
+
             database.add_device(connection, localDeviceCode, timestamp, actualValue, state)
+
         elif user_input == "2":
             devices = database.get_all_devices(connection)
+            print("Spisak svih lokalnih uređaja: ")
 
             for device in devices:
                 print(device)
@@ -46,7 +48,6 @@ def menu():
             for device in changes:
                 print("Actual value:")
                 print({device[2]})
-
         else:
             print("Invalid input, please try again!")
         

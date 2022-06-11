@@ -24,4 +24,3 @@ def get_all_devices(connection):
 def get_changes_by_localDeviceCode(connection, localDeviceCode, timestampStart, timestampStop):
     with connection:
         return connection.execute(GET_CHANGES_BY_LOCAL_DEVICE_CODE_AND_PERIOD, (localDeviceCode,timestampStart, timestampStop, )).fetchall()
-

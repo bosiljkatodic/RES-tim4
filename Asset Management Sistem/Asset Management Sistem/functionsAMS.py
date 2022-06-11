@@ -52,5 +52,7 @@ def menu():
             print("Invalid input, please try again!")
         
 
+def accept_message(server):
+    clientSocket, address=server.accept()
+    print(f"Connesciton from {address} has been established!")
 
-menu()

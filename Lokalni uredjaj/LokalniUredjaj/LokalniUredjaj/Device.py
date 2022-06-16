@@ -1,3 +1,5 @@
+#NE KORISTIMO
+
 from datetime import datetime
 
 

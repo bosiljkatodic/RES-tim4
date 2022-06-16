@@ -1,3 +1,6 @@
+#NE KORISTIMO
+
+
 from enum import Enum 
 
 class ActualValue(Enum):

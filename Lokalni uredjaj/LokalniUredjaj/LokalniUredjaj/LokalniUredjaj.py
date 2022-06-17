@@ -4,6 +4,7 @@ import time
 import hashlib
 import json
 
+#pokusaj pushovanja na git obrisati posle ovaj komentar
 PORT = 5050
 PORT_KONTROLER = 6060
 SERVER = "localhost"

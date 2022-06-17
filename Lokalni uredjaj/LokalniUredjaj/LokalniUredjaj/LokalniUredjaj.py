@@ -1,10 +1,10 @@
 from datetime import datetime
 import socket
 import time
-import Device
 import hashlib
 import json
 
+#pokusaj pushovanja na git obrisati posle ovaj komentar
 PORT = 5050
 PORT_KONTROLER = 6060
 SERVER = "localhost"
@@ -185,17 +185,10 @@ def connecting():
         startAMS()
 
     elif n == 2:
-        pass
+        print("Povezan sam na lokalni kontroler")
+        startLK()
     else:
          print("Odabrali ste nepostojecu opciju za povezivanje. Pokusajte ponovo.")
 
-    while True:
-        if n == 1:
-            pass
-        elif n == 2: #povezivanje na kontroler
-            pass
-
-        else:  #pogresno povezivanje
-            pass
-           
+    
 connecting()

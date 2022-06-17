@@ -189,13 +189,5 @@ def connecting():
     else:
          print("Odabrali ste nepostojecu opciju za povezivanje. Pokusajte ponovo.")
 
-    while True:
-        if n == 1:
-            pass
-        elif n == 2: #povezivanje na kontroler
-            pass
-
-        else:  #pogresno povezivanje
-            pass
-           
+    
 connecting()

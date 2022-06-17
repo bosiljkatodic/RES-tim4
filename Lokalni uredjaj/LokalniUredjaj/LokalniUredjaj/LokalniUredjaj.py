@@ -3,30 +3,15 @@ import socket
 import time
 import Device
 import hashlib
+import json
 
 PORT = 5050
+PORT_KONTROLER = 6060
 SERVER = "localhost"
 ADDR = (SERVER, PORT)
+ADDR_KONTROLER = (SERVER, PORT_KONTROLER)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
-
-
-"""
-def konektujNaAMS():
-    try:
-        AMSSocket.connect((host, port))
-    except socket.error as e:
-        print(str(e))
-    print('Cekamo na odgovor konekcije od strane AMS!')
-    res = AMSSocket.recv(1024)
-    global idTemp
-    idTemp = input("Unesite ID uredjaja -> ")
-    global stanjeTemp
-    stanjeTemp = input("Unesite pocetno stanje -> ")
-    temp="{0}/{1}/{2}".format(idTemp,str(datetime.now()),stanjeTemp)
-    Send(str.encode(temp), AMSSocket)
-"""
-
 
 def connectingToAMS():  
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
@@ -38,14 +23,9 @@ def sendAMS(client, msg):
     client.send(message)
     
 def startAMS():
-    #answer = input('Would you like to connect (yes/no)? ')
-    # if answer.lower() != 'yes':
-     #   return
-
+    
     connection = connectingToAMS()
-    #while True:
-        #if n == 1: #povezani smo na AMS, sada gledamo da li imamo analogni ili digitali i na osnovu toga pravimo meni
-           
+       
     print("Odaberite tip uredjaja:")
     print("DIGITALNI UREDJAJ - 1")
     print("ANALOGNI UREDJAJ - 2")   
@@ -53,23 +33,27 @@ def startAMS():
 
     if tipUredjaja == 1: #DIGITALNI
         state = "DIGITAL"
-        print(state)
+        #print(state)
         name = input("Unesite ime uredjaja: ") #ime uredjaja
         localDeviceCode = hashlib.md5(name.encode())
-        print(localDeviceCode.hexdigest())
+        #print(localDeviceCode.hexdigest())
         print("Unesite stanje uredjaja: 0 za OFF ili 1 za ON")
         actualValue = int(input(": "))
         timestamp = datetime.timestamp(datetime.now())
         device = "{0}/{1}/{2}/{3}".format(state, localDeviceCode.hexdigest(), actualValue, timestamp)
-        #print(device)
+        
         #print(f"Tip uredjaja: {state}, Ime uredjaja: {localDeviceCode}, Stanje: {actualValue}, Vreme: {timestamp}")
+
             
     elif tipUredjaja == 2: #ANALOGNI
         state = "ANALOG"
-        localDeviceCode = input("Unesite ime uredjaja: ") #ime uredjaja
+        name = input("Unesite ime uredjaja: ") #ime uredjaja
+        localDeviceCode = hashlib.md5(name.encode())
         print("Unesite stanje uredjaja: 0 za OFF ili od 1 do 5")
         actualValue = int(input(": "))
         timestamp = datetime.timestamp(datetime.now())
+        device = "{0}/{1}/{2}/{3}".format(state, localDeviceCode.hexdigest(), actualValue, timestamp)
+
     else: #pogresan odabir tipa uredjaja
         print("Nepostojeci tip uredjaja. Pokusajte ponovo")   
 
@@ -82,7 +66,18 @@ def startAMS():
         opcije = int(input(": "))
 
         if opcije == 1:
-            pass
+            if tipUredjaja == 1: #digitalni
+                print("Unesite novo stanje uredjaja: 0 za OFF ili 1 za ON")
+            elif tipUredjaja == 2: #analogni
+                print("Unesite novo stanje uredjaja: 0 za OFF ili od 1 do 5")
+                
+            actualValue = int(input(": "))  #novo stanje
+            stanje = device.split('/') #splitovanje device stringa
+            stanje[2] = actualValue
+            device = "{0}/{1}/{2}/{3}".format(state, localDeviceCode.hexdigest(), stanje[2], timestamp)
+
+            sendAMS(connection, device)
+
         elif opcije == 2:
             sendAMS(connection, DISCONNECT_MESSAGE)
             time.sleep(1)
@@ -97,41 +92,84 @@ def startAMS():
 
 
 def connectingToLK():
-    pass
-
-"""
-def connect():
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(ADDR)
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
+    client.connect(ADDR_KONTROLER)
     return client
 
-
-def send(client, msg):
+def sendLK(client, msg):
     message = msg.encode(FORMAT)
     client.send(message)
 
+def startLK():
 
-def start():
-    answer = input('Would you like to connect (yes/no)? ')
-    if answer.lower() != 'yes':
-        return
+    connection = connectingToLK()
+           
+    print("Odaberite tip uredjaja:")
+    print("DIGITALNI UREDJAJ - 1")
+    print("ANALOGNI UREDJAJ - 2")   
+    tipUredjaja = int(input(": "))
 
-    connection = connect()
+    if tipUredjaja == 1: #DIGITALNI
+        state = "DIGITAL"
+        #print(state)
+        name = input("Unesite ime uredjaja: ") #ime uredjaja
+        localDeviceCode = hashlib.md5(name.encode())
+        #print(localDeviceCode.hexdigest())
+        print("Unesite stanje uredjaja: 0 za OFF ili 1 za ON")
+        actualValue = int(input(": "))
+        timestamp = datetime.timestamp(datetime.now())
+        #device = "{0}/{1}/{2}/{3}".format(state, localDeviceCode.hexdigest(), actualValue, timestamp)
+
+        device = {"state": state, 
+                  "localDeviceCode": localDeviceCode.hexdigest(), 
+                  "actualValue": actualValue, 
+                  "timestamp": timestamp
+                 } 
+
+        y = json.dumps(device)
+        print(y)
+
+    elif tipUredjaja == 2: #ANALOGNI
+        state = "ANALOG"
+        name = input("Unesite ime uredjaja: ") #ime uredjaja
+        localDeviceCode = hashlib.md5(name.encode())
+        print("Unesite stanje uredjaja: 0 za OFF ili od 1 do 5")
+        actualValue = int(input(": "))
+        timestamp = datetime.timestamp(datetime.now())
+        device = "{0}/{1}/{2}/{3}".format(state, localDeviceCode.hexdigest(), actualValue, timestamp)
+        
+    else: #pogresan odabir tipa uredjaja
+        print("Nepostojeci tip uredjaja. Pokusajte ponovo")   
+
+    sendLK(connection, y)
+
     while True:
-        msg = input("Message (q for quit): ")
+        print("Odaberite neku od opcija: ")
+        print("PROMENA STANJA - 1")
+        print("DISCONNECTED - 2")
+        opcije = int(input(": "))
 
-        if msg == 'q':
+        if opcije == 1:
+            if tipUredjaja == 1: #digitalni
+                print("Unesite novo stanje uredjaja: 0 za OFF ili 1 za ON")
+            elif tipUredjaja == 2: #analogni
+                print("Unesite novo stanje uredjaja: 0 za OFF ili od 1 do 5")
+                
+            actualValue = int(input(": "))  #novo stanje
+            stanje = device.split('/') #splitovanje device stringa
+            stanje[2] = actualValue
+            device = "{0}/{1}/{2}/{3}".format(state, localDeviceCode.hexdigest(), stanje[2], timestamp)
+
+            sendLK(connection, device)
+
+        elif opcije == 2:
+            sendLK(connection, DISCONNECT_MESSAGE)
+            time.sleep(1)
+            print('Disconnected')
             break
+        else:
+            print("niste izabrali odgovarajucu opciju. Pokusajte ponovo.")
 
-        send(connection, msg)
-
-    send(connection, DISCONNECT_MESSAGE)
-    time.sleep(1)
-    print('Disconnected')
-
-
-start()
-"""
 
 #startAMS()
 

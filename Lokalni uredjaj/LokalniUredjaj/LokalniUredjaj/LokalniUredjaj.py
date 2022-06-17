@@ -1,7 +1,6 @@
 from datetime import datetime
 import socket
 import time
-import Device
 import hashlib
 import json
 
@@ -185,7 +184,8 @@ def connecting():
         startAMS()
 
     elif n == 2:
-        pass
+        print("Povezan sam na lokalni kontroler")
+        startLK()
     else:
          print("Odabrali ste nepostojecu opciju za povezivanje. Pokusajte ponovo.")
 

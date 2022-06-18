@@ -35,7 +35,8 @@ def handle_client(conn, addr):
 
             #upisivanje u bazu
             def menu():
-                connection = database.connect()
+                name="data.db"
+                connection = database.connect(name)
                 database.create_tables(connection)
                 podaci = msg.split("/")
                 date = datetime.fromtimestamp(float(podaci[3])).strftime('%Y-%m-%d %H:%M:%S')

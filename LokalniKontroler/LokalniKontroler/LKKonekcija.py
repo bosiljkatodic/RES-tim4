@@ -1,14 +1,89 @@
+from datetime import datetime
+import threading
 import socket
-from unicodedata import name
+import json
+#import xml.etree.cElementTree as e
 
-if __name__== "__main__":
+#import database
 
-    server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #klijentska str tcp
-    server.connect((socket.gethostname(), 4000))
+PORT_KONTROLER = 6060
+SERVER = "localhost"
+ADDR = (SERVER, PORT_KONTROLER)
+FORMAT = "utf-8"
+DISCONNECT_MESSAGE = "!DISCONNECT"
+PORUKA = ''
 
-    #serverska strana tcp
-    server2=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server2.bind((socket.gethostname(),5000))
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(ADDR)
 
-    server2.listen(10);
+clients = set()
+clients_lock = threading.Lock()
+
+
+def handle_client(conn, addr):
+    print(f"[NEW CONNECTION] {addr} Connected")
+
+    try:
+        connected = True
+        while connected:
+            msg = conn.recv(1024).decode(FORMAT)
+            #PORUKA = msg
+            """
+            def createXML():
+                r = e.Element("Device")
+                e.SubElement(r,"state").text = msg["state"]
+                e.SubElement(r,"localDeviceCode").text = msg["localDeviceCode"]
+                e.SubElement(r,"actualValue").text = str(msg["actualValue"])
+                e.SubElement(r,"timestamp").text = str(msg["timestamp"])
+                a = e.ElementTree(r)
+                a.write("buffer.xml")
+
+            createXML()
+"""
+            if not msg:
+                break
+
+            if msg == DISCONNECT_MESSAGE:
+                connected = False
+                print(f"[{addr}] {msg}")
+                break
+            
+
+            """
+
+            #upisivanje u bazu
+            def menu():
+                connection = database.connect()
+                database.create_tables(connection)
+                podaci = msg.split("/")
+                date = datetime.fromtimestamp(float(podaci[3])).strftime('%Y-%m-%d %H:%M:%S')
+                database.add_device(connection, podaci[0], podaci[1], podaci[2], date)
+                
+
+            menu()
+            """
+            print(f"[{addr}] {msg}")
+
+            with clients_lock:
+                for c in clients:
+                    c.sendall(f"[{addr}] {msg}".encode(FORMAT))
+
+    finally:
+        with clients_lock:
+            clients.remove(conn)
+
+        conn.close()
+
+
+def start():
+    print('[SERVER STARTED]!')
+    server.listen()
+    while True:
+        conn, addr = server.accept()
+        with clients_lock:
+            clients.add(conn)
+        thread = threading.Thread(target=handle_client, args=(conn, addr))
+        thread.start()
+
+
+start()

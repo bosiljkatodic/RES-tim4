@@ -18,7 +18,7 @@ def connectingToAMS():
     client.connect(ADDR)
     return client
 
-def sendAMS(client, msg):
+def sendAMS(client, msg):    
     message = msg.encode(FORMAT)
     client.send(message)
     

@@ -1,13 +1,14 @@
 from datetime import datetime
 from distutils.command.config import config
+import os
 import socket
 import time
 import hashlib
 import json
 import XMLProvere #import ucitajKonfiguracijuLokalnogUredjaja as ucitajKLU
 import random
+import xml.etree.cElementTree as ET
 
-#pokusaj pushovanja na git obrisati posle ovaj komentar
 PORT = 5050
 PORT_KONTROLER = 6060
 SERVER = "localhost"
@@ -46,20 +47,9 @@ def sendData(client):
     message = "{0}/{1}/{2}/{3}".format(tipUredjaja, hashlib.md5(name.encode()).hexdigest(), actualValue, datetime.timestamp(datetime.now()))  
    
     print(message)   
-    """
-    message = {"state": tipUredjaja, 
-               "localDeviceCode": hashlib.md5(name.encode()).hexdigest(), 
-                "actualValue": actualValue, 
-                "timestamp": datetime.timestamp(datetime.now())
-                }
-    
-    y = json.dumps(message)
-    """
+
     message = message.encode(FORMAT)
     client.send(message)
-
-
-
 
 #f-ja za izbor povezivanja
 def connecting(tipKonekcije):
@@ -110,6 +100,21 @@ def PeriodSlanja():
         print("Izabrali ste nepostojecu opciju. Pokusajte ponovo.")
         PeriodSlanja()
 
+def Ubrzanje():
+    localDeviceConfig = "Vreme.xml"
+    #print(localDeviceConfig)
+    
+    if not os.path.isfile(localDeviceConfig): #ako je xml prazan
+        return 1 #jedna realna sek  = jedna sek u sistemu
+    else:
+        x = ET.parse(localDeviceConfig)
+        lu = x.getroot()
+            
+         
+        for data in lu:
+            if data.tag == "ubrzanje":
+                return int(data.text)
+        
 #MAIN      
 name = input("Unesite ime uredjaja: ") #ime uredjaja
 localDeviceCode = hashlib.md5(name.encode()).hexdigest()
@@ -125,9 +130,7 @@ if config: #postoji vec taj uredjaj
     periodSlanja = int(config["periodSlanja"])
     print(tipUredjaja, konekcijaNA, periodSlanja)
     #print(config)
-    
-
-    
+     
 else: #posto ne postoji cong fajl, znaci da imamo novi uredjaj
     print("Ne postoji konf fajl")
     
@@ -144,9 +147,9 @@ if not connection:
 sendData(connection)
 
 poslednjeVremeSlanja = datetime.timestamp(datetime.now())
-
+ubrzanje = Ubrzanje()
 while True:  # slanje podataka na svaki intervalu PeriodSLanja npr svakih 5 sek
-    razlikaVremena = datetime.timestamp(datetime.now()) - poslednjeVremeSlanja
+    razlikaVremena = (datetime.timestamp(datetime.now()) - poslednjeVremeSlanja) * ubrzanje
     
     if razlikaVremena >= float(periodSlanja):
         #posaljiPOdatke
@@ -155,4 +158,5 @@ while True:  # slanje podataka na svaki intervalu PeriodSLanja npr svakih 5 sek
         #time.sleep(0.5)
 
         poslednjeVremeSlanja = datetime.timestamp(datetime.now())
+        novoVreme = poslednjeVremeSlanja + razlikaVremena
 

@@ -8,6 +8,7 @@ import json
 import XMLProvere #import ucitajKonfiguracijuLokalnogUredjaja as ucitajKLU
 import random
 import xml.etree.cElementTree as ET
+import funkcijeLokalniUredjaj
 
 PORT = 5050
 PORT_KONTROLER = 6060
@@ -17,24 +18,9 @@ ADDR_KONTROLER = (SERVER, PORT_KONTROLER)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
 
-def connectingToAMS(): 
+####################
     
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
-    try:
-        client.connect(ADDR)
-        return client
-    except ConnectionRefusedError:
-        print("AMS je nedostupan")
-        return False
-    
-def connectingToLK():
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
-    try:
-        client.connect(ADDR_KONTROLER)
-        return client
-    except ConnectionRefusedError:
-        print("Kontroler je nedostupan")
-        return False
+####################2
    
 def sendData(client):
    # print(tipUredjaja, type(tipUredjaja))
@@ -53,23 +39,26 @@ def sendData(client):
 
 #f-ja za izbor povezivanja
 def connecting(tipKonekcije):
-    
+
     if tipKonekcije == 1:
+        print()
         print("Povezujem se sa AMS-om ...")
-        connection = connectingToAMS()
+        connection = funkcijeLokalniUredjaj.connectingToAMS()
         return connection
     
     elif tipKonekcije == 2:
+        print()
         print("Povezujem se na lokalni kontroler...")
-        connection = connectingToLK()
+        connection = funkcijeLokalniUredjaj.connectingToLK()
         return connection
        
 
 def TipUredjaja():
+    print()
     print("Odaberite tip uredjaja:")
     print("DIGITALNI UREDJAJ - 1")
     print("ANALOGNI UREDJAJ - 2")   
-    tipUredjaja = input(": ")
+    tipUredjaja = input("Tip uredjaja --->  ")
     
      
     if tipUredjaja == "1" or tipUredjaja == "2":
@@ -79,10 +68,11 @@ def TipUredjaja():
         TipUredjaja() 
 
 def TipPovezivanja():
+    print()
     print("Odaberite na sta zelite da se povezete: ")
     print("AMS - unesite broj 1")
     print("Lokalni kontroler - unesite broj 2")
-    konekcijaNA = input("Povezujem se na: ")  #promenljiva za konekciju  
+    konekcijaNA = input("Povezujem se na ---> ")  #promenljiva za konekciju  
     
     if konekcijaNA == "1" or konekcijaNA == "2":
         return int(konekcijaNA)
@@ -91,8 +81,9 @@ def TipPovezivanja():
         TipPovezivanja() 
     
 def PeriodSlanja():
+    print()
     print("Izaberi period slanja podataka u sekundama: ")
-    periodSlanja = input("Period slanja podataka: ")
+    periodSlanja = input("Period slanja podataka ---> ")
     
     if periodSlanja.strip().isdigit(): #da bi se iput pretcvorio u int 
         return int(periodSlanja)
@@ -115,7 +106,8 @@ def Ubrzanje():
             if data.tag == "ubrzanje":
                 return int(data.text)
         
-#MAIN      
+#MAIN  
+print()    
 name = input("Unesite ime uredjaja: ") #ime uredjaja
 localDeviceCode = hashlib.md5(name.encode()).hexdigest()
 
@@ -123,6 +115,7 @@ config = XMLProvere.ucitajKonfiguracijuLokalnogUredjaja(str(name))
 
 if config: #postoji vec taj uredjaj
     #print("Postoji konf fajl", config)
+    print()
     config = json.loads(config)
 
     tipUredjaja = int(config["tipUredjaja"])
@@ -132,6 +125,7 @@ if config: #postoji vec taj uredjaj
     #print(config)
      
 else: #posto ne postoji cong fajl, znaci da imamo novi uredjaj
+    print()
     print("Ne postoji konf fajl")
     
     tipUredjaja = TipUredjaja()

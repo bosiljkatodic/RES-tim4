@@ -18,18 +18,18 @@ def test_create_tables():
       
 def test_add_device():
     
-    assert database.add_device(connection=sqlite3.connect("proba.db"),state="ANALOG",
+    assert database.add_device(connection=sqlite3.connect("proba.db"),state="1",
                                localDeviceCode="jhbbyuvhvbwdns",actualValue=1,
                                timestamp=datetime.timestamp(datetime.now()))!=None
-    assert database.add_device(connection=None,state="ANALOG",localDeviceCode="aaaa",actualValue=1,
+    assert database.add_device(connection=None,state="1",localDeviceCode="aaaa",actualValue=1,
                                timestamp=datetime.timestamp(datetime.now()))=="Nema konekcije"
     assert database.add_device(connection=sqlite3.connect("proba.db"),state="abdc",localDeviceCode="bhvvcjhbbbwdns",actualValue=1,
                                timestamp=datetime.timestamp(datetime.now()))=="Loš state"
-    assert database.add_device(connection=sqlite3.connect("proba.db"),state="ANALOG",localDeviceCode="",actualValue=1,
+    assert database.add_device(connection=sqlite3.connect("proba.db"),state="1",localDeviceCode="",actualValue=1,
                                timestamp=datetime.timestamp(datetime.now()))=="Loš localDeviceKod"
-    assert database.add_device(connection=sqlite3.connect("proba.db"),state="ANALOG",localDeviceCode="vsv",actualValue=None,
+    assert database.add_device(connection=sqlite3.connect("proba.db"),state="1",localDeviceCode="vsv",actualValue=None,
                                timestamp=datetime.timestamp(datetime.now()))=="Loš actualValue"
-    assert database.add_device(connection=sqlite3.connect("proba.db"),state="ANALOG",localDeviceCode="vuv",actualValue=1,
+    assert database.add_device(connection=sqlite3.connect("proba.db"),state="1",localDeviceCode="vuv",actualValue=1,
                                timestamp=None)=="Loš timestamp" 
   
 def test_get_all_devices():

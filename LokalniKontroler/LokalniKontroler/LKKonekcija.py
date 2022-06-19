@@ -56,7 +56,7 @@ def handle_client(conn, addr):
                 while xml_lock.locked():
                     time.sleep(0.001)
                 zakljucan = xml_lock.locked()
-                print(zakljucan, "Snimam podatke:", msg)
+                #print(zakljucan, "Snimam podatke:", msg)
                 xml_lock.acquire()   #zakljucaj
                 if not os.path.isfile(fileName) :
                     print('NEMA FAJLA!!!')
@@ -72,13 +72,13 @@ def handle_client(conn, addr):
                 with open (fileName, "wb") as xml_file :
                     tree.write(xml_file)
 
-                print('Podaci snimljeni', msg)
+                #print('Podaci snimljeni', msg)
                 xml_lock.release()  #otkljucaj
                 
             menu()
 
             
-            print(f"[{addr}] {msg}")
+            print(f"Podaci snimljeni[{addr}] {msg}")
 
             #with clients_lock:
                # for c in clients:

@@ -71,7 +71,7 @@ def print_changes_for_device():
     c = connection.cursor()
     localDeviceCode = input("Unesite localDeviceCode za zeljeni uredjaj:")
     timestampStart = input("Unesite pocetak vremenskog intervala, npr. 2022-06-18 13:49:01 :")
-    timestampStop = input("Unesite pocetak vremenskog intervala, npr. 2022-06-18 13:49:01 :")
+    timestampStop = input("Unesite kraj vremenskog intervala, npr. 2022-06-18 13:49:01 :")
 
     sqlStatement = "SELECT * FROM devices WHERE localDeviceCode = ? AND timestamp >= ? AND timestamp <= ?;"
     c.execute(sqlStatement,(localDeviceCode,timestampStart, timestampStop, ))

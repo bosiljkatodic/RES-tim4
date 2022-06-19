@@ -60,4 +60,39 @@ def pokreniLK(inputFileName) :
         return False
     else:
         print('Fajl postoji')
-        return True     
+        return True   
+"""
+def dodajKontroler():
+    fileNameKontroleri = r"C:\Users\Korisnik\Desktop\res\Clone - 18.6\RES-tim4\Kontroleri.xml"
+    if not os.path.isfile(fileNameKontroleri) :
+        print('NEMA FAJLA!!!')
+    #else :
+    #    print('Fajl postoji')
+    x = ET.parse(fileNameKontroleri)
+    lk = x.getroot()
+
+    k = ET.SubElement(lk, 'Kontroler')
+    ET.SubElement(k, 'Naziv').text = name
+    ET.SubElement(k, 'Port').text = str(PORT_KONTROLER)
+
+    tree = ET.ElementTree(lk)
+
+    with open (fileNameKontroleri, "wb") as xml_file :
+        tree.write(xml_file)
+ 
+def ucitajKontroler():
+    fileNameKontroleri = r"C:\Users\Korisnik\Desktop\res\Clone - 18.6\RES-tim4\Kontroleri.xml"
+    #print(localDeviceConfig)
+    
+    if not os.path.isfile(fileNameKontroleri):
+        return 1 #jedna realna sek  = jedna sek u sistemu
+    else:
+        x = ET.parse(fileNameKontroleri)
+        lk = x.getroot()
+
+        
+        for k in lk.findall('Kontroler'):
+            if k.find('Naziv').text == name:
+                port = k.find('Port').text
+                return int(port)      
+                """

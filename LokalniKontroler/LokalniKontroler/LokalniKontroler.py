@@ -9,3 +9,7 @@ ET.SubElement(doc, "field1", name="interval").text = "5min"
 tree = ET.ElementTree(root)
 ET.indent(tree, space=' ', level=0) #za formatiranje xml-a
 tree.write("buffer.xml")
+
+
+
+#NE KORISTIMO

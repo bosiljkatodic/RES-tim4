@@ -47,7 +47,8 @@ def napraviKonfiguracijuLokalnogUredjaja(name, tipUredjaja, localDeviceCode, kon
         tree.write(xml_file)
         
     print('XML FAJL KREIRAN')
-
+    if(tree!=None):
+        return "Fajl kreiran"
 
 
   

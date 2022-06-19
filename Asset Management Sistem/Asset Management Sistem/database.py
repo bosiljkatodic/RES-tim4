@@ -24,7 +24,7 @@ def create_tables(connection):
 def add_device(connection, state, localDeviceCode, actualValue, timestamp):
     if(connection==None):
         return "Nema konekcije"
-    elif(state!="DIGITAL" and state!="ANALOG"):
+    elif(state!="1" and state!="2"):
         return "Loš state"
     elif(localDeviceCode=="" or localDeviceCode==None):
         return "Loš localDeviceKod"
